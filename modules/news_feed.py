@@ -139,7 +139,7 @@ def load_news_data(api_key, keyword_all='Crypto', keyword_business='Bitcoin'):
         'Business_sources_sentiment': sentiment_business_score
     }).set_index('Date')
 
-    df_btc = yf.download('BTC-USD', start=new_sentiments.index.min())
+    df_btc = yf.download('BTC-USD', start=new_sentiments.index.min(), auto_adjust=True, progress=False)
 
     # 🔧 Solución al error: quitar MultiIndex si existe
     if isinstance(df_btc.columns, pd.MultiIndex):
