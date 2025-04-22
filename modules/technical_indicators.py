@@ -71,7 +71,7 @@ def fit_trendlines_high_low(high, low, close):
 # --------------------------------------------------------------------
 @st.cache_data
 def load_and_process_data(ticker: str, start_date: str, order_value=5, last_n=56):
-    df = yf.download(ticker, start=start_date)
+    df = yf.download(ticker, start=start_date, auto_adjust=True, progress=False)
     
     if df.empty:
         return None
