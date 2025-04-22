@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 @st.cache_data
 def load_data(ticker: str, start_date: str) -> pd.DataFrame:
 
-    df = yf.download(ticker, start=start_date)
+    df = yf.download(ticker, start=start_date, auto_adjust=True, progress=False)
 
     # 🔧 Aplanar columnas si tienen MultiIndex
     if isinstance(df.columns, pd.MultiIndex):
