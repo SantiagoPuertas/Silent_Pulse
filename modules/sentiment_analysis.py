@@ -29,7 +29,7 @@ def load_fear_and_greed_data():
     # Obtenemos precio de BTC
         # Obtenemos precio de BTC con manejo de errores y auto ajuste
     try:
-        df_btc = yf.download('BTC-USD', period="6mo", auto_adjust=True, progress=False)[['Close']]
+        df_btc = yf.download('BTC-USD', auto_adjust=True, progress=False)[['Close']]
     except Exception as e:
         st.error(f"Error al descargar datos de BTC: {e}")
         return None, None, None, None, None, None
