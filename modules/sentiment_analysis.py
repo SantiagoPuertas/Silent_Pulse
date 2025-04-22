@@ -27,7 +27,14 @@ def load_fear_and_greed_data():
     df = df.iloc[::-1]  # Revertimos el orden (más antiguo primero)
 
     # Obtenemos precio de BTC
-    df_btc = yf.download('BTC-USD')[['Close']]
+        # Obtenemos precio de BTC con manejo de errores y auto ajuste
+    try:
+        df_btc = yf.download('BTC-USD', period="6mo", auto_adjust=True, progress=False)[['Close']]
+    except Exception as e:
+        st.error(f"Error al descargar datos de BTC: {e}")
+        return None, None, None, None, None, None
+
+
     df_btc.index.name = 'timestamp'
     df_btc.columns = ['Close']
 
