@@ -66,13 +66,6 @@ streamlit run main.py
 - `newsapi-python`
 - `mplfinance`
 
----
-
-## 📸 Captura
-
-![demo](https://user-images.githubusercontent.com/tu_usuario/demo.gif)
-
----
 
 ## 📩 Licencia
 
@@ -80,4 +73,4 @@ Este proyecto es de código abierto bajo la licencia MIT.
 
 ---
 
-> Desarrollado con ❤️ por [tu_nombre]
+> Desarrollado con ❤️ por Santiago Puertas Puchol
