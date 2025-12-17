@@ -5,20 +5,12 @@ import yfinance as yf
 import pandas as pd
 
 @st.cache_data(ttl=3600)
-def load_market_data(ticker: str, start_date: str):
-    df = yf.download(
-        ticker,
-        start=start_date,
-        auto_adjust=True,
-        progress=False
-    )
+def load_market_data(ticker: str, period="5y"):
+    t = yf.Ticker(ticker)
+    df = t.history(period=period, auto_adjust=True)
 
-    if df.empty:
+    if df is None or df.empty:
         return None
-
-    # Aplanar columnas si Yahoo devuelve MultiIndex
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
 
     df.index = pd.to_datetime(df.index)
     return df
