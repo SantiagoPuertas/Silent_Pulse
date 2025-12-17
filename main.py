@@ -1,7 +1,6 @@
 import streamlit as st
 
 from modules.price_prediction import show_price_prediction
-from modules.sentiment_analysis import show_sentiment_analysis
 from modules.technical_indicators import show_technical_indicators
 from modules.news_feed import show_news_feed
 
@@ -26,15 +25,6 @@ def main():
                 st.session_state.selected_section = "Predicción"
                 st.session_state.selected_subsection = "Predicción de precios"
 
-        # Sección: Sentimiento
-        with st.expander("💬 Sentimiento"):
-            if st.button("Análisis de sentimiento"):
-                st.session_state.selected_section = "Sentimiento"
-                st.session_state.selected_subsection = "Análisis de sentimiento"
-            if st.button("Sentimiento de noticias"):
-                st.session_state.selected_section = "Sentimiento"
-                st.session_state.selected_subsection = "Sentimiento de noticias"
-
         # Sección: Indicadores Técnicos
         with st.expander("📉 Indicadores Técnicos"):
             if st.button("Indicadores técnicos"):
@@ -45,11 +35,6 @@ def main():
     if st.session_state.selected_section == "Predicción":
         if st.session_state.selected_subsection == "Predicción de precios":
             show_price_prediction()
-    elif st.session_state.selected_section == "Sentimiento":
-        if st.session_state.selected_subsection == "Análisis de sentimiento":
-            show_sentiment_analysis()
-        elif st.session_state.selected_subsection == "Sentimiento de noticias":
-            show_news_feed()
     elif st.session_state.selected_section == "Indicadores Técnicos":
         if st.session_state.selected_subsection == "Indicadores técnicos":
             show_technical_indicators()
