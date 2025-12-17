@@ -12,6 +12,7 @@ import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
+from modules.data_loader import load_market_data
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -94,7 +95,7 @@ def get_articles_sentiments(api_key, keywrd, my_date, sources_list=None):
 
 
 @st.cache_data
-def load_news_data(api_key, keyword_all='Crypto', keyword_business='Bitcoin'):
+def load_news_data(api_key, keyword_all='Apple', keyword_business='Technology'):
     today = date.today()
     start_date = today - timedelta(days=28)
     cache_file = "static/cached_news_data.csv"
@@ -139,16 +140,16 @@ def load_news_data(api_key, keyword_all='Crypto', keyword_business='Bitcoin'):
         'Business_sources_sentiment': sentiment_business_score
     }).set_index('Date')
 
-    df_btc = yf.download('BTC-USD', start=new_sentiments.index.min(), auto_adjust=True, progress=False)
+    df_price = load_market_data("AAPL", start_date)
 
     # 🔧 Solución al error: quitar MultiIndex si existe
-    if isinstance(df_btc.columns, pd.MultiIndex):
-        df_btc.columns = df_btc.columns.get_level_values(0)
+    if isinstance(df_price.columns, pd.MultiIndex):
+        df_price.columns = df_price.columns.get_level_values(0)
 
-    df_btc = df_btc[['Close']].copy()
-    df_btc.columns = ['closing_Price']
+    df_price = df_price[['Close']].copy()
+    df_price.columns = ['closing_Price']
 
-    merged_new = new_sentiments.join(df_btc, how='inner').dropna()
+    merged_new = new_sentiments.join(df_price, how='inner').dropna()
 
     # Juntar con lo que ya había
     full_df = pd.concat([existing_df, merged_new])
@@ -201,7 +202,7 @@ def show_news_feed():
 
 
     # Mostramos un vistazo del DataFrame
-    st.subheader("DataFrame combinando Sentimiento y Precio BTC")
+    st.subheader("DataFrame combinando Sentimiento y Precio")
     st.dataframe(merged_df.tail(10))
 
     # ---------------------------------------------------
@@ -223,7 +224,7 @@ def show_news_feed():
             x=merged_df.index,
             y=merged_df['closing_Price'],
             mode='lines',
-            name='BTC Closing Price',
+            name='Closing Price',
             line=dict(color='gold', width=3)
         ),
         row=1, col=1,
@@ -266,12 +267,12 @@ def show_news_feed():
 
     # --- Ajustes de layout
     fig.update_layout(
-        title="Sentimiento vs. Precio BTC (últimas 4 semanas)",
+        title="Sentimiento vs. Precio (últimas 4 semanas)",
         hovermode='x unified',
         height=700
     )
     fig.update_xaxes(title_text="Fecha", row=2, col=1)
-    fig.update_yaxes(title_text="Precio BTC (USD)", secondary_y=False, row=1, col=1)
+    fig.update_yaxes(title_text="Precio (USD)", secondary_y=False, row=1, col=1)
     fig.update_yaxes(title_text="Sentiment Score", secondary_y=True, row=1, col=1)
     fig.update_yaxes(title_text="Score Diario", row=2, col=1)
 
@@ -282,7 +283,7 @@ def show_news_feed():
     # ---------------------------------------------------
     # Correlación
     # ---------------------------------------------------
-    st.subheader("Correlación entre Sentimiento y Precio BTC")
+    st.subheader("Correlación entre Sentimiento y Precio")
     corr = merged_df[['All_sources_sentiment','Business_sources_sentiment','closing_Price']].corr()
     st.write(corr)
 
@@ -293,5 +294,5 @@ def show_news_feed():
     - Valores cercanos a 0 implican poca correlación.
     """)
 
-    st.write("¡Listo! Aquí tienes una vista rápida de los sentimientos en noticias y el precio de BTC.")
+    st.write("¡Listo! Aquí tienes una vista rápida de los sentimientos en noticias y el precio de.")
     st.write("Puedes ajustar los parámetros en la barra lateral para ver cómo afectan a los resultados.")

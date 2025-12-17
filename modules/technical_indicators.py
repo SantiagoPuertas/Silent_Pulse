@@ -3,11 +3,10 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import yfinance as yf
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 from plotly.subplots import make_subplots
+from modules.data_loader import load_market_data
 
 # -----------------------------------------------------------
 #  1) Funciones de indicadores
@@ -71,7 +70,7 @@ def fit_trendlines_high_low(high, low, close):
 # --------------------------------------------------------------------
 @st.cache_data
 def load_and_process_data(ticker: str, start_date: str, order_value=5, last_n=56):
-    df = yf.download(ticker, start=start_date, auto_adjust=True, progress=False)
+    df = load_market_data(ticker, start_date)
     
     if df.empty:
         return None
@@ -152,11 +151,11 @@ def show_technical_indicators():
     #ticker = st.sidebar.text_input("Ticker (YFinance)", "BTC-USD")
 
     modo_seleccion = st.sidebar.radio("Modo de selección de ticker:", ["Predefinido", "Escribir manualmente"])
-    tickers = ["BTC-USD", "ETH-USD", "AAPL", "MSFT", "TSLA"]
+    tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
     if modo_seleccion == "Predefinido":
         ticker = st.sidebar.selectbox("Selecciona un Activo", tickers)
     else:
-        ticker = st.sidebar.text_input("Escribe un ticker", "BTC-USD").upper()
+        ticker = st.sidebar.text_input("Escribe un ticker", "AAPL").upper()
 
     start_date = st.sidebar.text_input("Fecha de Inicio (YYYY-MM-DD)", "2023-01-01")
     order_value = st.sidebar.slider("Ventana para Soportes/Resistencias (order)", min_value=3, max_value=10, value=5)
@@ -220,7 +219,7 @@ def show_technical_indicators():
 
     # Puedes inferir la moneda a partir del ticker
     # Ejemplo: ticker = "BTC-USD" -> 'USD'
-    ticker = "BTC-USD"  # Esto vendría de la selección del usuario
+    
     currency = ticker.split("-")[-1] if "-" in ticker else "USD"
 
     # Fila 1 - Pivote clásico

@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import yfinance as yf
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import Sequential
@@ -8,20 +7,11 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow import keras
 import plotly.graph_objects as go
 import warnings
+from modules.data_loader import load_market_data
 
 warnings.filterwarnings('ignore')
 
-@st.cache_data
-def load_data(ticker: str, start_date: str) -> pd.DataFrame:
 
-    df = yf.download(ticker, start=start_date, auto_adjust=True, progress=False)
-
-    # 🔧 Aplanar columnas si tienen MultiIndex
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-
-
-    return df
 
 @st.cache_data
 def preprocess_data(df: pd.DataFrame, n_past=14, n_future=1):
@@ -71,12 +61,12 @@ def show_price_prediction():
         st.markdown("### ⚙️ Parámetros del modelo")
 
         modo_seleccion = st.radio("Modo:", ["Predefinido", "Escribir manualmente"])
-        tickers = ["BTC-USD", "ETH-USD", "AAPL", "MSFT", "TSLA"]
+        tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
         
         if modo_seleccion == "Predefinido":
             ticker = st.selectbox("Activo", tickers)
         else:
-            ticker = st.text_input("Ticker manual", "BTC-USD").upper()
+            ticker = st.text_input("Ticker manual", "AAPL").upper()
 
         start_date = st.text_input("Fecha inicio", "2024-01-01")
         learning_rate = st.number_input("Learning Rate", min_value=0.0001, max_value=0.1, value=0.02, step=0.01)
@@ -86,12 +76,11 @@ def show_price_prediction():
 
   #______________
 
-
-    df = load_data(ticker, start_date)
-    if df.empty:
-        st.warning("No se encontraron datos para este ticker o rango de fechas.")
-        return
-
+    df = load_market_data(ticker, start_date)
+    if df is None or df.empty:
+            st.warning("No se encontraron datos para este ticker o rango de fechas.")
+            return
+    
     st.success("Datos descargados correctamente")
 
     # Mostrar ambos
